@@ -1,7 +1,6 @@
 package com.example.projetoGerenciamento.dto;
 
 public class ProductResponseDTO {
-
     private final Integer id;
     private final String name;
     private final Double price;

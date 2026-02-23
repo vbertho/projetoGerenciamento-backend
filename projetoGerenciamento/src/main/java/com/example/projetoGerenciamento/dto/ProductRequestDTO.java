@@ -11,8 +11,6 @@ public class ProductRequestDTO {
     @Positive(message = "Price should be positive")
     private Double price;
 
-    private Integer quantity;
-
     public String getName() {
         return name;
     }
@@ -27,13 +25,5 @@ public class ProductRequestDTO {
 
     public void setPrice(Double price) {
         this.price = price;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
     }
 }

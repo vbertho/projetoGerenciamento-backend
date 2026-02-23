@@ -2,36 +2,45 @@ package com.example.projetoGerenciamento.service;
 import com.example.projetoGerenciamento.dto.ProductRequestDTO;
 import com.example.projetoGerenciamento.dto.ProductResponseDTO;
 import com.example.projetoGerenciamento.model.Product;
-import jakarta.transaction.Transactional;
+import com.example.projetoGerenciamento.model.Stock;
+import com.example.projetoGerenciamento.repository.StockRepository;
 import org.springframework.stereotype.Service;
 import com.example.projetoGerenciamento.repository.ProductRepository;
-
 import java.util.List;
 
 @Service
 public class ProductService {
-    private final ProductRepository repository;
+    private final ProductRepository productRepo;
+    private final StockRepository stockRepo;
 
     //dependency injection
-    public ProductService(ProductRepository repository) {
-        this.repository = repository;
+    public ProductService(ProductRepository productRepo,
+                          StockRepository stockRepo) {
+        this.productRepo = productRepo;
+        this.stockRepo = stockRepo;
     }
 
-    //create
-    public ProductResponseDTO  create (ProductRequestDTO dto) {
+    //create product and initialize stock with quantity 0
+    public ProductResponseDTO  create(ProductRequestDTO dto) {
         Product product = new Product();
         product.setName(dto.getName());
         product.setPrice(dto.getPrice());
-        product.setQuantity(dto.getQuantity());
 
-        Product saved = repository.save(product);
+        Product savedProduct = productRepo.save(product);
 
-        return mapToResponse(saved);
+        Stock stock = new Stock();
+        stock.setQuantity(0);
+        stock.setProduct(savedProduct);
+
+        Stock savedStock = stockRepo.save(stock);
+        savedProduct.setStock(savedStock);
+
+        return mapToResponse(savedProduct);
     }
 
     //list all
     public List<ProductResponseDTO> listAll() {
-        return repository.findAll()
+        return productRepo.findAll()
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -39,36 +48,32 @@ public class ProductService {
 
     //update
     public ProductResponseDTO  update(Integer id, ProductRequestDTO dto) {
-        Product product = repository.findById(id)
+        Product product = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         product.setName(dto.getName());
         product.setPrice(dto.getPrice());
 
-        Product updated = repository.save(product);
+        Product updated = productRepo.save(product);
 
         return mapToResponse(updated);
     }
 
     //delete
     public void delete(Integer id) {
-        Product product = repository.findById(id)
+        Product product = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        repository.delete(product);
-
+        productRepo.delete(product);
     }
 
     //update quantity
     public ProductResponseDTO updateQuantity(Integer id, int value) {
-        Product product = repository.findById(id)
+        Product product = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        if (value < 0) {
-            throw new IllegalArgumentException("Quantity cannot be negative");
-        }
-
-        product.setQuantity(value);
-        repository.save(product);
+        Stock stock = product.getStock();
+        stock.setQuantity(value);
+        stockRepo.save(stock);
 
         return mapToResponse(product);
     }
@@ -79,7 +84,7 @@ public class ProductService {
                 product.getId(),
                 product.getName(),
                 product.getPrice(),
-                product.getQuantity()
+                product.getStock().getQuantity()
         );
     }
 }

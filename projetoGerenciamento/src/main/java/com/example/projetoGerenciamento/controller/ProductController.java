@@ -1,6 +1,7 @@
 package com.example.projetoGerenciamento.controller;
 import com.example.projetoGerenciamento.dto.ProductRequestDTO;
 import com.example.projetoGerenciamento.dto.ProductResponseDTO;
+import com.example.projetoGerenciamento.dto.StockRequestDTO;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import com.example.projetoGerenciamento.service.ProductService;
@@ -44,7 +45,9 @@ public class ProductController {
 
     //update quantity
     @PatchMapping("/{id}/updateQuantity")
-    public ProductResponseDTO updateQuantity(@PathVariable Integer id, @RequestParam int value) {
-        return service.updateQuantity(id, value);
+    public ProductResponseDTO updateQuantity(
+            @PathVariable Integer id,
+            @RequestBody @Valid StockRequestDTO dto) {
+        return service.updateQuantity(id, dto.getQuantity());
     }
 }

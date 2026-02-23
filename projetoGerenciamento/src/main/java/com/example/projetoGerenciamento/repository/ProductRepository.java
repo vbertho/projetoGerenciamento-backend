@@ -1,5 +1,4 @@
 package com.example.projetoGerenciamento.repository;
-
 import com.example.projetoGerenciamento.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
