@@ -12,9 +12,6 @@ public class Sale {
     @Column(nullable = false)
     private LocalDate saleDate;
 
-    @Column(nullable = false)
-    private Double totalAmount;
-
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SoldProduct> soldProducts;
 
@@ -32,14 +29,6 @@ public class Sale {
 
     public void setSaleDate(LocalDate saleDate) {
         this.saleDate = saleDate;
-    }
-
-    public Double getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(Double totalAmount) {
-        this.totalAmount = totalAmount;
     }
 
     public List<SoldProduct> getSoldProducts() {

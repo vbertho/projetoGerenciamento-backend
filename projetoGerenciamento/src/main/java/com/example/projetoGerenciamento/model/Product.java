@@ -16,6 +16,9 @@ public class Product {
     @Column(nullable = false)
     private Double price;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     @JsonIgnore
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private Stock stock;
@@ -62,5 +65,13 @@ public class Product {
 
     public void setSoldProducts(List<SoldProduct> soldProducts) {
         this.soldProducts = soldProducts;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

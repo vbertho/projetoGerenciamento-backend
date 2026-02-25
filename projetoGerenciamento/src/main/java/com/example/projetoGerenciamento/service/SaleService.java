@@ -39,11 +39,8 @@ public class SaleService {
     public SaleResponseDTO createSale(SaleRequestDTO dto) {
         Sale sale = new Sale();
         sale.setSaleDate(dto.getSaleDate());
-        sale.setTotalAmount(0.0);
         saleRepo.save(sale);
 
-        //accumulator variable for total sale amount
-        double total = 0.0;
         List<SoldProduct> soldProducts = new ArrayList<>();
 
         //for each product (item) in the request list
@@ -68,14 +65,11 @@ public class SaleService {
             soldProduct.setUnitPrice(product.getPrice());
 
             soldProducts.add(soldProduct);
-            //calculate the total amount by multiplying the price by the quantity
-            total += product.getPrice() * item.getQuantity();
         }
 
         //save all sold products and update the sale total
         soldProductRepo.saveAll(soldProducts);
 
-        sale.setTotalAmount(total);
         saleRepo.save(sale);
 
         return mapToResponse(sale, soldProducts);
@@ -97,7 +91,6 @@ public class SaleService {
         return new SaleResponseDTO(
                 sale.getId(),
                 sale.getSaleDate(),
-                sale.getTotalAmount(),
                 products
         );
     }

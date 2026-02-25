@@ -38,9 +38,9 @@ public class ProductService {
         return mapToResponse(savedProduct);
     }
 
-    //list all
+    //list all - soft delete
     public List<ProductResponseDTO> listAll() {
-        return productRepo.findAll()
+        return productRepo.findByActiveTrue()
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -58,12 +58,12 @@ public class ProductService {
         return mapToResponse(updated);
     }
 
-    //delete
+    //delete - soft delete
     public void delete(Integer id) {
         Product product = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        productRepo.delete(product);
+        product.setActive(false);
+        productRepo.save(product);
     }
 
     //update quantity

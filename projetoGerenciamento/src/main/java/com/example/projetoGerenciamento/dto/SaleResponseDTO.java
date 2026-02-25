@@ -6,13 +6,11 @@ import java.util.List;
 public class SaleResponseDTO {
     private final Integer saleId;
     private final LocalDate saleDate;
-    private final Double totalAmount;
     private final List<SoldProductResponse> products;
 
-    public SaleResponseDTO(Integer saleId, LocalDate saleDate, Double totalAmount, List<SoldProductResponse> products) {
+    public SaleResponseDTO(Integer saleId, LocalDate saleDate, List<SoldProductResponse> products) {
         this.saleId = saleId;
         this.saleDate = saleDate;
-        this.totalAmount = totalAmount;
         this.products = products;
     }
 
@@ -22,10 +20,6 @@ public class SaleResponseDTO {
 
     public LocalDate getSaleDate() {
         return saleDate;
-    }
-
-    public Double getTotalAmount() {
-        return totalAmount;
     }
 
     public List<SoldProductResponse> getProducts() {
