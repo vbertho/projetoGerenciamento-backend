@@ -29,7 +29,7 @@ public class ReportController {
     }
 
     @GetMapping("/bestSelling")
-    public Object[] bestSellingProduct(@RequestParam LocalDate start, @RequestParam LocalDate end) {
+    public String bestSellingProduct(@RequestParam LocalDate start, @RequestParam LocalDate end) {
         return service.bestSellingProduct(start, end);
     }
 

@@ -15,8 +15,8 @@ public interface SoldProductRepository extends JpaRepository<SoldProduct, Intege
     @Query("SELECT p.name, SUM(sp.quantity) FROM SoldProduct sp JOIN sp.product p JOIN sp.sale s WHERE s.saleDate BETWEEN :start AND :end GROUP BY p.id, p.name")
     List<Object[]> totalUnitsSoldByProduct(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
-    @Query("SELECT p.name, SUM(sp.quantity) FROM SoldProduct sp JOIN sp.product p JOIN sp.sale s WHERE s.saleDate BETWEEN :start AND :end GROUP BY p.id, p.name ORDER BY SUM(sp.quantity) DESC LIMIT 1")
-    Object[] bestSellingProduct(@Param("start") LocalDate start, @Param("end") LocalDate end);
+    @Query("SELECT p.name FROM SoldProduct sp JOIN sp.product p JOIN sp.sale s WHERE s.saleDate BETWEEN :start AND :end GROUP BY p.id, p.name ORDER BY SUM(sp.quantity) DESC LIMIT 1")
+    String bestSellingProduct(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
     @Query("SELECT SUM(sp.unitPrice * sp.quantity) FROM SoldProduct sp JOIN sp.sale s WHERE s.saleDate BETWEEN :start AND :end")
     Double totalAmountByPeriod(@Param("start") LocalDate start, @Param("end") LocalDate end);

@@ -30,8 +30,8 @@ public class ReportService {
         return soldProductRepo.totalUnitsSoldByProduct(start, end);
     }
 
-    // best selling product in a period
-    public Object[] bestSellingProduct(LocalDate start, LocalDate end) {
+    // best-selling product in a period
+    public String bestSellingProduct(LocalDate start, LocalDate end) {
         return soldProductRepo.bestSellingProduct(start, end);
     }
 
