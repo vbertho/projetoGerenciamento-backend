@@ -1,9 +1,9 @@
 package com.example.projetoGerenciamento.service;
 import com.example.projetoGerenciamento.dto.ProductRequestDTO;
 import com.example.projetoGerenciamento.dto.ProductResponseDTO;
-import com.example.projetoGerenciamento.model.Product;
-import com.example.projetoGerenciamento.model.Stock;
+import com.example.projetoGerenciamento.model.*;
 import com.example.projetoGerenciamento.repository.StockRepository;
+import com.example.projetoGerenciamento.security.AuthHelper;
 import org.springframework.stereotype.Service;
 import com.example.projetoGerenciamento.repository.ProductRepository;
 import java.util.List;
@@ -12,19 +12,25 @@ import java.util.List;
 public class ProductService {
     private final ProductRepository productRepo;
     private final StockRepository stockRepo;
+    private final AuthHelper authHelper;
 
     //dependency injection
     public ProductService(ProductRepository productRepo,
-                          StockRepository stockRepo) {
+                          StockRepository stockRepo,
+                          AuthHelper authHelper) {
         this.productRepo = productRepo;
         this.stockRepo = stockRepo;
+        this.authHelper = authHelper;
     }
 
     //create product and initialize stock with quantity 0
     public ProductResponseDTO  create(ProductRequestDTO dto) {
+        User currentUser = authHelper.getCurrentUser();
+
         Product product = new Product();
         product.setName(dto.getName());
         product.setPrice(dto.getPrice());
+        product.setUser(currentUser);
 
         Product savedProduct = productRepo.save(product);
 
@@ -40,7 +46,8 @@ public class ProductService {
 
     //list all - soft delete
     public List<ProductResponseDTO> listAll() {
-        return productRepo.findByActiveTrue()
+        User currentUser = authHelper.getCurrentUser();
+        return productRepo.findByUserAndActiveTrue(currentUser)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -48,7 +55,8 @@ public class ProductService {
 
     //update
     public ProductResponseDTO  update(Integer id, ProductRequestDTO dto) {
-        Product product = productRepo.findById(id)
+        User currentUser = authHelper.getCurrentUser();
+        Product product = productRepo.findByIdAndUser(id, currentUser)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         product.setName(dto.getName());
         product.setPrice(dto.getPrice());
@@ -60,7 +68,8 @@ public class ProductService {
 
     //delete - soft delete
     public void delete(Integer id) {
-        Product product = productRepo.findById(id)
+        User currentUser = authHelper.getCurrentUser();
+        Product product = productRepo.findByIdAndUser(id, currentUser)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         product.setActive(false);
         productRepo.save(product);
@@ -68,7 +77,8 @@ public class ProductService {
 
     //update quantity
     public ProductResponseDTO updateQuantity(Integer id, int value) {
-        Product product = productRepo.findById(id)
+        User currentUser = authHelper.getCurrentUser();
+        Product product = productRepo.findByIdAndUser(id, currentUser)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         Stock stock = product.getStock();

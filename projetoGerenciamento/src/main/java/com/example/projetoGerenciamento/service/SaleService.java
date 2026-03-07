@@ -1,15 +1,12 @@
 package com.example.projetoGerenciamento.service;
-
 import com.example.projetoGerenciamento.dto.SaleRequestDTO;
 import com.example.projetoGerenciamento.dto.SaleResponseDTO;
-import com.example.projetoGerenciamento.model.Product;
-import com.example.projetoGerenciamento.model.Sale;
-import com.example.projetoGerenciamento.model.SoldProduct;
-import com.example.projetoGerenciamento.model.Stock;
+import com.example.projetoGerenciamento.model.*;
 import com.example.projetoGerenciamento.repository.ProductRepository;
 import com.example.projetoGerenciamento.repository.SaleRepository;
 import com.example.projetoGerenciamento.repository.SoldProductRepository;
 import com.example.projetoGerenciamento.repository.StockRepository;
+import com.example.projetoGerenciamento.security.AuthHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,30 +19,36 @@ public class SaleService {
     private final SoldProductRepository soldProductRepo;
     private final ProductRepository productRepo;
     private final StockRepository stockRepo;
+    private final AuthHelper authHelper;
 
     public SaleService(SaleRepository saleRepo,
                        SoldProductRepository soldProductRepo,
                        ProductRepository productRepo,
-                       StockRepository stockRepo) {
+                       StockRepository stockRepo,
+                       AuthHelper authHelper) {
         this.saleRepo = saleRepo;
         this.soldProductRepo = soldProductRepo;
         this.productRepo = productRepo;
         this.stockRepo = stockRepo;
+        this.authHelper = authHelper;
     }
 
     //create sale and sold products, decrease stock quantity
     //rolls back all db changes if any error occurs
     @Transactional
     public SaleResponseDTO createSale(SaleRequestDTO dto) {
+        User currentUser = authHelper.getCurrentUser();
+
         Sale sale = new Sale();
         sale.setSaleDate(dto.getSaleDate());
+        sale.setUser(currentUser);
         saleRepo.save(sale);
 
         List<SoldProduct> soldProducts = new ArrayList<>();
 
         //for each product (item) in the request list
         for (SaleRequestDTO.SoldProductRequest item : dto.getProducts()) {
-            Product product = productRepo.findById(item.getProductId())
+            Product product = productRepo.findByIdAndUser(item.getProductId(), currentUser)
                     .orElseThrow(() -> new RuntimeException("Product not found"));
 
             //check if quantity is available

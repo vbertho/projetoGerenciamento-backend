@@ -15,6 +15,10 @@ public class Sale {
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SoldProduct> soldProducts;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
+
     public Integer getId() {
         return id;
     }
@@ -37,5 +41,13 @@ public class Sale {
 
     public void setSoldProducts(List<SoldProduct> soldProducts) {
         this.soldProducts = soldProducts;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
