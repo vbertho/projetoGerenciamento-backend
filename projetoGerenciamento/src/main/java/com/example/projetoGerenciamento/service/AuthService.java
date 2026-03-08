@@ -5,10 +5,12 @@ import com.example.projetoGerenciamento.dto.LoginDTO;
 import com.example.projetoGerenciamento.dto.RegisterDTO;
 import com.example.projetoGerenciamento.model.User;
 import com.example.projetoGerenciamento.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
@@ -31,7 +33,7 @@ public class AuthService {
     // creates a new user with encrypted password and returns a JWT token
     public AuthResponseDTO register(RegisterDTO dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already in use");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
         }
 
         User user = new User();
