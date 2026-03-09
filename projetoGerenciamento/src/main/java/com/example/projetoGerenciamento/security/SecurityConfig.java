@@ -34,7 +34,7 @@ public class SecurityConfig {
 
                 // defines which routes are public and which require authentication
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
 
