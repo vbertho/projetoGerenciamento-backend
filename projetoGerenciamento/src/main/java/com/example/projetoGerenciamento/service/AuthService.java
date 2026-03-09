@@ -33,7 +33,7 @@ public class AuthService {
     // creates a new user with encrypted password and returns a JWT token
     public AuthResponseDTO register(RegisterDTO dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
         }
 
         User user = new User();
