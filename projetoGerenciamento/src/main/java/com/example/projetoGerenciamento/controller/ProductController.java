@@ -3,6 +3,7 @@ import com.example.projetoGerenciamento.dto.ProductRequestDTO;
 import com.example.projetoGerenciamento.dto.ProductResponseDTO;
 import com.example.projetoGerenciamento.dto.StockRequestDTO;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.projetoGerenciamento.service.ProductService;
 
@@ -17,6 +18,11 @@ public class ProductController {
     //dependency injection
     public ProductController(ProductService service) {
         this.service = service;
+    }
+
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("ok");
     }
 
     //create
