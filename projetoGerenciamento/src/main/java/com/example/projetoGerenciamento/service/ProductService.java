@@ -1,6 +1,7 @@
 package com.example.projetoGerenciamento.service;
 import com.example.projetoGerenciamento.dto.ProductRequestDTO;
 import com.example.projetoGerenciamento.dto.ProductResponseDTO;
+import com.example.projetoGerenciamento.exception.ProductNotFoundException;
 import com.example.projetoGerenciamento.model.*;
 import com.example.projetoGerenciamento.repository.StockRepository;
 import com.example.projetoGerenciamento.security.AuthHelper;
@@ -24,7 +25,7 @@ public class ProductService {
     }
 
     //create product and initialize stock with quantity 0
-    public ProductResponseDTO  create(ProductRequestDTO dto) {
+    public ProductResponseDTO create(ProductRequestDTO dto) {
         User currentUser = authHelper.getCurrentUser();
 
         Product product = new Product();
@@ -44,7 +45,7 @@ public class ProductService {
         return mapToResponse(savedProduct);
     }
 
-    //list all - soft delete
+    //list all active true
     public List<ProductResponseDTO> listAll() {
         User currentUser = authHelper.getCurrentUser();
         return productRepo.findByUserAndActiveTrue(currentUser)
@@ -54,10 +55,10 @@ public class ProductService {
     }
 
     //update
-    public ProductResponseDTO  update(Integer id, ProductRequestDTO dto) {
+    public ProductResponseDTO update(Integer id, ProductRequestDTO dto) {
         User currentUser = authHelper.getCurrentUser();
         Product product = productRepo.findByIdAndUser(id, currentUser)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException(id));
         product.setName(dto.getName());
         product.setPrice(dto.getPrice());
 
@@ -70,7 +71,7 @@ public class ProductService {
     public void delete(Integer id) {
         User currentUser = authHelper.getCurrentUser();
         Product product = productRepo.findByIdAndUser(id, currentUser)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException(id));
         product.setActive(false);
         productRepo.save(product);
     }
@@ -79,7 +80,7 @@ public class ProductService {
     public ProductResponseDTO updateQuantity(Integer id, int value) {
         User currentUser = authHelper.getCurrentUser();
         Product product = productRepo.findByIdAndUser(id, currentUser)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException(id));
 
         Stock stock = product.getStock();
         stock.setQuantity(value);
