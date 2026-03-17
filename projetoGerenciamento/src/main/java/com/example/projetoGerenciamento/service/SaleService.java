@@ -1,6 +1,8 @@
 package com.example.projetoGerenciamento.service;
 import com.example.projetoGerenciamento.dto.SaleRequestDTO;
 import com.example.projetoGerenciamento.dto.SaleResponseDTO;
+import com.example.projetoGerenciamento.exception.InsufficientStockException;
+import com.example.projetoGerenciamento.exception.ProductNotFoundException;
 import com.example.projetoGerenciamento.model.*;
 import com.example.projetoGerenciamento.repository.ProductRepository;
 import com.example.projetoGerenciamento.repository.SaleRepository;
@@ -49,12 +51,12 @@ public class SaleService {
         //for each product (item) in the request list
         for (SaleRequestDTO.SoldProductRequest item : dto.getProducts()) {
             Product product = productRepo.findByIdAndUser(item.getProductId(), currentUser)
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
+                    .orElseThrow(() -> new ProductNotFoundException(item.getProductId()));
 
             //check if quantity is available
             Stock stock = product.getStock();
             if (stock.getQuantity() < item.getQuantity()) {
-                throw new RuntimeException("Insufficient stock for product: " + product.getName());
+                throw new InsufficientStockException(product.getName());
             }
 
             //decrease stock by the quantity sold
